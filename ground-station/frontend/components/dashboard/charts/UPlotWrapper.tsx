@@ -14,11 +14,19 @@ const syncCursor = uPlot.sync('dash-sync');
 
 const FALLBACK_WIDTH = 400;
 const FALLBACK_HEIGHT = 250;
+const PIXELS_PER_POINT = 3;
+const MAX_PLOT_WIDTH = 12000;
 
 export function UPlotWrapper({ options, data, title }: UPlotWrapperProps) {
   const chartHostRef = useRef<HTMLDivElement>(null);
+  const autoFollowRef = useRef(true);
   const markers = useTelemetryStore((state) => state.markers);
   const [size, setSize] = useState({ width: FALLBACK_WIDTH, height: FALLBACK_HEIGHT });
+  const pointCount = data[0]?.length ?? 0;
+  const plotWidth = useMemo(() => {
+    const dataDrivenWidth = pointCount * PIXELS_PER_POINT;
+    return Math.min(MAX_PLOT_WIDTH, Math.max(size.width, dataDrivenWidth));
+  }, [pointCount, size.width]);
 
   useEffect(() => {
     if (!chartHostRef.current) return;
@@ -50,6 +58,11 @@ export function UPlotWrapper({ options, data, title }: UPlotWrapperProps) {
       observer.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (!chartHostRef.current || !autoFollowRef.current) return;
+    chartHostRef.current.scrollLeft = chartHostRef.current.scrollWidth;
+  }, [plotWidth, data]);
   
   // Memoize options to prevent frequent re-renders of the chart instance
   const mergedOptions = useMemo<uPlot.Options>(() => {
@@ -73,7 +86,7 @@ export function UPlotWrapper({ options, data, title }: UPlotWrapperProps) {
     return {
       ...options,
       axes,
-      width: size.width,
+      width: plotWidth,
       height: size.height,
       cursor: {
         ...options.cursor,
@@ -114,16 +127,26 @@ export function UPlotWrapper({ options, data, title }: UPlotWrapperProps) {
         ]
       }
     };
-  }, [options, markers, size.height, size.width]);
+  }, [options, markers, plotWidth, size.height]);
 
   return (
     <div className="flex flex-col w-full h-full bg-white border border-gray-200 rounded-lg shadow-sm p-4">
       <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-2 flex-none">{title}</h3>
-      <div className="flex-grow w-full overflow-hidden relative" ref={chartHostRef}>
-        <UplotReact
-          options={mergedOptions}
-          data={data}
-        />
+      <div
+        className="flex-grow w-full min-w-0 overflow-x-auto overflow-y-hidden relative"
+        ref={chartHostRef}
+        onScroll={(event) => {
+          const viewport = event.currentTarget;
+          const distanceToRight = viewport.scrollWidth - viewport.clientWidth - viewport.scrollLeft;
+          autoFollowRef.current = distanceToRight < 24;
+        }}
+      >
+        <div style={{ width: `${plotWidth}px`, height: '100%' }}>
+          <UplotReact
+            options={mergedOptions}
+            data={data}
+          />
+        </div>
       </div>
     </div>
   );
