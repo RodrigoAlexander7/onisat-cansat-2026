@@ -1,0 +1,24 @@
+| Módulo LoRa-02 SX1278 433MHz | ESP32-S3 |
+| ---------------------------- | -------- |
+| MISO                         | 13       |
+| SCK                          | 12       |
+| MOSI                         | 11       |
+| NSS                          | 10       |
+| DIO0                         | 5        |
+| RST                          | 4        |
+| 3.3V                         | 3V3      |
+
+Tabla de conexión — Raspberry Pi Zero 2W ↔ ESP32-S3 / LoRa
+
+
+
+|Physic Pin Raspberry Pi Zero 2W | GPIO (BCM) | Señal / Pin |
+| ------------------------------- | ---------- | ----------- |
+| 1                               | 3.3V       | 3.3V        |
+| 15                              | GPIO22     | RST         |
+| 19                              | GPIO10     | MOSI        |
+| 21                              | GPIO9      | MISO        |
+| 22                              | GPIO25     | DIO0        |
+| 23                              | GPIO11     | SCK         |
+| 24                              | GPIO8      | NSS         |
+| 39                              | GND        | GND         |
