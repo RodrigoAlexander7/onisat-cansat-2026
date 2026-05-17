@@ -12,7 +12,7 @@
 namespace imaging {
 
 bool Camera::init() {
-  const bool hasFswebcam = (std::system("fswebcam --version >/dev/null 2>&1") == 0);
+  const bool hasFswebcam = (access("/usr/bin/fswebcam", X_OK) == 0) || (std::system("command -v fswebcam >/dev/null 2>&1") == 0);
   const bool hasUsbDevice = (access(config::kUsbCameraDevice, F_OK) == 0);
   if (hasFswebcam && hasUsbDevice) {
     backend_ = Backend::kFswebcam;
