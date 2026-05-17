@@ -24,3 +24,12 @@
 
 ### The pin 24 is changed and we use 18 (24GPIO) instead cause is used by the Linux System of the Rasp
 | 24                              | GPIO8      | NSS         | -> Changed
+
+
+### Conexion table — Raspberry Pi Zero 2W ↔ Placa Sensors
+| Raspberry Pi Zero 2W | Señal | Placa Sensors |
+| -------------------- | ----- | ------------- |
+| 5 (GPIO3 / SCL)      | SCL   | 3 (SCL)       |
+| 3 (GPIO2 / SDA)      | SDA   | 4 (SDA)       |
+| 9 (GND)              | GND   | 5 (GND)       |
+| 17 (3.3V)            | 3.3V  | 7 (3.3V)      |

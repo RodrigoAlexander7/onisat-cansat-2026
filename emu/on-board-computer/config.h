@@ -25,6 +25,7 @@ constexpr std::size_t kMaxLoraPayloadBytes = 100;
 constexpr uint8_t kImagePacketType = 0x01;
 constexpr uint8_t kImageStartPacketType = 0x10;  // RTS start marker
 constexpr uint8_t kImageEndPacketType = 0x11;    // RTS end marker
+constexpr uint8_t kTelemetryPacketType = 0x02;
 constexpr std::size_t kMaxImageFragments = 255;
 constexpr uint8_t kFragmentRepeatCount = 2;
 
@@ -42,6 +43,8 @@ constexpr int kAnaglyphShiftPx = 6;
 constexpr int kCaptureCount = 5;
 constexpr unsigned long kCaptureIntervalMs = 3000;
 constexpr unsigned long kInterPacketDelayMs = 60;
+constexpr int kImageFragmentsPerTelemetry = 10;
+constexpr unsigned long kTelemetryPeriodMs = 200;  // 5 Hz
 
 }  // namespace config
 

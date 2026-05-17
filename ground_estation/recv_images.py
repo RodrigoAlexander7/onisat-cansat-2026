@@ -7,6 +7,7 @@ BAUD = 115200
 OUT_DIR = "received_images"
 
 PKT_TYPE_IMAGE_FRAGMENT = 0x01
+PKT_TYPE_TELEMETRY = 0x02
 PKT_TYPE_IMAGE_START = 0x10
 PKT_TYPE_IMAGE_END = 0x11
 
@@ -61,6 +62,24 @@ def parse_rts_line(line):
     return raw
 
 
+def u16(data, i):
+    return (data[i] << 8) | data[i + 1]
+
+
+def i16(data, i):
+    v = u16(data, i)
+    return v - 65536 if v > 32767 else v
+
+
+def u32(data, i):
+    return (data[i] << 24) | (data[i + 1] << 16) | (data[i + 2] << 8) | data[i + 3]
+
+
+def i32(data, i):
+    v = u32(data, i)
+    return v - 4294967296 if v > 2147483647 else v
+
+
 with serial.Serial(PORT, BAUD, timeout=1) as ser:
     print(f"Escuchando {PORT}...")
     while True:
@@ -77,6 +96,30 @@ with serial.Serial(PORT, BAUD, timeout=1) as ser:
             continue
 
         packet_type = raw[0]
+
+        if packet_type == PKT_TYPE_TELEMETRY:
+            if len(raw) < 39:
+                continue
+            ts = u32(raw, 1)
+            seq = u16(raw, 6)
+            pressure_pa = i32(raw, 8) / 10.0
+            altitude_m = i16(raw, 12) / 10.0
+            temp_c = i16(raw, 14) / 10.0
+            hum_pct = raw[16]
+            ax = i16(raw, 17) / 1000.0
+            ay = i16(raw, 19) / 1000.0
+            az = i16(raw, 21) / 1000.0
+            gx = i16(raw, 23) / 1000.0
+            gy = i16(raw, 25) / 1000.0
+            gz = i16(raw, 27) / 1000.0
+            current_a = u16(raw, 35) / 100.0
+            power_w = u16(raw, 37) / 100.0
+            print(
+                f"[TEL] seq={seq} t={ts}ms alt={altitude_m:.1f}m pres={pressure_pa:.1f}Pa "
+                f"temp={temp_c:.1f}C hum={hum_pct}% acc=({ax:.2f},{ay:.2f},{az:.2f}) "
+                f"gyro=({gx:.2f},{gy:.2f},{gz:.2f}) I={current_a:.2f}A P={power_w:.2f}W"
+            )
+            continue
 
         if packet_type == PKT_TYPE_IMAGE_START:
             if len(raw) < 8:

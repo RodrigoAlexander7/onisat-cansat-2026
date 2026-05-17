@@ -22,6 +22,12 @@ add_executable(${PROJECT_NAME}
   src/comms/packet.cpp
   src/imaging/camera.cpp
   src/imaging/queue.cpp
+  sensors/i2c_bus.cpp
+  sensors/altimeter.cpp
+  sensors/environment.cpp
+  sensors/imu.cpp
+  sensors/magnetometer.cpp
+  sensors/power.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
