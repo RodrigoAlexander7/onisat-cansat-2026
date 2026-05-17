@@ -19,8 +19,8 @@
 | 21                              | GPIO9      | MISO        |
 | 22                              | GPIO25     | DIO0        |
 | 23                              | GPIO11     | SCK         |
-| 26                              | GPIO7      | NSS         |
+| 18                              | GPIO24     | NSS         |
 | 39                              | GND        | GND         |
 
-### The pin 24 is changed and we use 26 instead cause is used by the Linux System of the Rasp
-| 24                              | GPIO8      | NSS         |
+### The pin 24 is changed and we use 18 (24GPIO) instead cause is used by the Linux System of the Rasp
+| 24                              | GPIO8      | NSS         | -> Changed

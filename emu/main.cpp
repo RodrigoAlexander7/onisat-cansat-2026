@@ -2,11 +2,11 @@
 #include <RadioLib.h>
 #include "hal/RPi/PiHal.h"
 
-// SPI CE0 (GPIO8)
-PiHal* hal = new PiHal(1);
 
-// NSS=GPIO8, DIO0=GPIO25, RST=GPIO22, DIO1 no conectado
-SX1278 radio = new Module(hal, 7, 25, 22, RADIOLIB_NC);
+PiHal* hal = new PiHal(0);
+
+// NSS=GPIO24, DIO0=GPIO25, RST=GPIO22, DIO1 no conectado
+SX1278 radio = new Module(hal, 24, 25, 22, RADIOLIB_NC);
 
 int main() {
   std::printf("[SX1278 TX] Init...\n");

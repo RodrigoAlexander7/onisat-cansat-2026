@@ -12,6 +12,11 @@ docker run --rm -it \
   pi-builder-trixie /bin/bash -c "
     apt update && \
     apt install -y git cmake g++ liblgpio-dev nano && \
-    git clone --depth 1 https://github.com/jgromes/RadioLib.git /workspace/RadioLib && \
+    if [ ! -d '/workspace/RadioLib' ]; then \
+        echo 'Clonando RadioLib por primera vez...'; \
+        git clone --depth 1 https://github.com/jgromes/RadioLib.git /workspace/RadioLib; \
+    else \
+        echo 'RadioLib ya existe en tu PC, saltando clonación.'; \
+    fi && \
     /bin/bash
   "

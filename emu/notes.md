@@ -13,4 +13,6 @@ siempre hace cd /workspace
 ## Para compilar se usa
   cmake -S . -B build
   cmake --build build -j4
-  sudo ./build/rpi_sx1278_tx
+  
+# y para correrlo
+  sudo ./rpi_sx1278_tx
