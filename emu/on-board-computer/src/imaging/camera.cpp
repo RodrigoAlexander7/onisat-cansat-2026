@@ -19,14 +19,9 @@ bool Camera::init() {
     std::printf("[Camera] Backend fswebcam (%s)\n", config::kUsbCameraDevice);
     return true;
   }
-
-  if (std::system("libcamera-still --version >/dev/null 2>&1") == 0) {
-    backend_ = Backend::kLibcamera;
-    std::printf("[Camera] Backend libcamera-still\n");
-    return true;
-  }
-
-  std::printf("[Camera] No hay backend disponible (ni fswebcam ni libcamera-still)\n");
+  std::printf("[Camera] fswebcam no disponible o dispositivo ausente (fswebcam=%d, device=%d)\n",
+              hasFswebcam ? 1 : 0,
+              hasUsbDevice ? 1 : 0);
   return false;
 }
 
@@ -38,13 +33,6 @@ std::optional<std::vector<uint8_t>> Camera::capture() {
         " -r " + std::to_string(config::kCaptureWidth) + "x" + std::to_string(config::kCaptureHeight) +
         " --jpeg " + std::to_string(config::kCaptureJpegQuality) +
         " --no-banner " + std::string(config::kCapturePath) + " >/dev/null 2>&1";
-  } else if (backend_ == Backend::kLibcamera) {
-    command =
-        "libcamera-still -n --immediate --timeout " + std::to_string(config::kCaptureTimeoutMs) +
-        " --width " + std::to_string(config::kCaptureWidth) +
-        " --height " + std::to_string(config::kCaptureHeight) +
-        " --quality " + std::to_string(config::kCaptureJpegQuality) +
-        " -o " + std::string(config::kCapturePath) + " >/dev/null 2>&1";
   } else {
     std::printf("[Camera] Backend no inicializado\n");
     return std::nullopt;

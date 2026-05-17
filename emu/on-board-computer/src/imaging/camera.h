@@ -16,7 +16,6 @@ class Camera {
   enum class Backend {
     kNone,
     kFswebcam,
-    kLibcamera,
   };
 
   Backend backend_ = Backend::kNone;
