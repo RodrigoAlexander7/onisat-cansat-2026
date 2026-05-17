@@ -9,3 +9,8 @@ docker run --rm -it -v /home/totora/Documents/PROFESIONAL/lora-transmision/EMU:/
 siempre hace cd /workspace 
 
 (El -v /ruta/a/tu/codigo:/workspace hace un "espejo". Todo lo que el contenedor genere ahí, aparecerá mágicamente en tu disco duro real).
+
+## Para compilar se usa
+  cmake -S . -B build
+  cmake --build build -j4
+  sudo ./build/rpi_sx1278_tx

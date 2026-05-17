@@ -1,16 +1,17 @@
 #!/bin/bash
 
-# hacemos build
+# 1. Hacemos build de la imagen local
 docker build -t pi-builder-trixie .
-# run the container
+
+# 2. Registramos qemu para emulación multiarquitectura
 sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-# enter to the container
-docker run --rm -it -v /home/totora/Documents/PROFESIONAL/lora-transmision/emu:/workspace pi-builder-trixie
-
-# instalamos dependencias
-apt update
-apt install -y git cmake g++ liblgpio-dev nano
-
-# descargamos RadioLib desde github
-git clone --depth 1 https://github.com/jgromes/RadioLib.git ~/RadioLib
+# 3. Arrancamos el contenedor y le pasamos los comandos en cadena
+docker run --rm -it \
+  -v /home/totora/Documents/PROFESIONAL/lora-transmision/emu:/workspace \
+  pi-builder-trixie /bin/bash -c "
+    apt update && \
+    apt install -y git cmake g++ liblgpio-dev nano && \
+    git clone --depth 1 https://github.com/jgromes/RadioLib.git /workspace/RadioLib && \
+    /bin/bash
+  "

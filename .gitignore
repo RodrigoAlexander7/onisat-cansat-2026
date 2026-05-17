@@ -1,0 +1,32 @@
+# === CMake y Compilación ===
+build/
+CMakeCache.txt
+CMakeFiles/
+CMakeSettings.json
+cmake_install.cmake
+Makefile
+targets/
+
+# === Binarios y Ejecutables ===
+*.bin
+*.out
+*.exe
+*.o
+*.obj
+*.a
+*.so
+
+
+# === Dependencias Externas (Clonadas localmente) ===
+RadioLib/
+
+# === Docker e IDEs ===
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+
+# === Archivos de Registro y Dump ===
+*.log
+vgcore.*
