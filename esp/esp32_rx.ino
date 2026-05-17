@@ -6,11 +6,11 @@
 SX1278 radio = new Module(10, 5, 4, RADIOLIB_NC, SPI);
 
 volatile bool receivedFlag = false;
-volatile bool enableInterrupt = true;
+volatile bool interrupcionHabilitada = true; // CAMBIADO: Nombre único para evitar conflicto
 uint32_t frameSeq = 0;
 
 void setFlag(void) {
-  if (!enableInterrupt) {
+  if (!interrupcionHabilitada) {
     return;
   }
   receivedFlag = true;
@@ -38,7 +38,10 @@ void setup() {
   }
 
   radio.setCRC(true);
-  radio.setDio0Action(setFlag);
+
+  // CAMBIADO: Agregado RISING como segundo argumento requerido por RadioLib
+  radio.setDio0Action(setFlag, RISING);
+
   state = radio.startReceive();
   if (state != RADIOLIB_ERR_NONE) {
     Serial.print("ERR_START_RX,");
@@ -56,7 +59,7 @@ void loop() {
     return;
   }
 
-  enableInterrupt = false;
+  interrupcionHabilitada = false;
   receivedFlag = false;
 
   int packetLength = radio.getPacketLength();
@@ -64,7 +67,7 @@ void loop() {
     Serial.print("ERR_LEN,");
     Serial.println(packetLength);
     radio.startReceive();
-    enableInterrupt = true;
+    interrupcionHabilitada = true;
     return;
   }
 
@@ -88,5 +91,5 @@ void loop() {
   }
 
   radio.startReceive();
-  enableInterrupt = true;
+  interrupcionHabilitada = true;
 }
