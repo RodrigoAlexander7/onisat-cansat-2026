@@ -5,29 +5,50 @@
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <unistd.h>
 
 #include "config.h"
 
 namespace imaging {
 
 bool Camera::init() {
-  const std::string command = "libcamera-still --version >/dev/null 2>&1";
-  const int state = std::system(command.c_str());
-  if (state != 0) {
-    std::printf("[Camera] libcamera-still no disponible\n");
-    return false;
+  const bool hasFswebcam = (std::system("fswebcam --version >/dev/null 2>&1") == 0);
+  const bool hasUsbDevice = (access(config::kUsbCameraDevice, F_OK) == 0);
+  if (hasFswebcam && hasUsbDevice) {
+    backend_ = Backend::kFswebcam;
+    std::printf("[Camera] Backend fswebcam (%s)\n", config::kUsbCameraDevice);
+    return true;
   }
-  std::printf("[Camera] OK\n");
-  return true;
+
+  if (std::system("libcamera-still --version >/dev/null 2>&1") == 0) {
+    backend_ = Backend::kLibcamera;
+    std::printf("[Camera] Backend libcamera-still\n");
+    return true;
+  }
+
+  std::printf("[Camera] No hay backend disponible (ni fswebcam ni libcamera-still)\n");
+  return false;
 }
 
 std::optional<std::vector<uint8_t>> Camera::capture() {
-  const std::string command =
-      "libcamera-still -n --immediate --timeout " + std::to_string(config::kCaptureTimeoutMs) +
-      " --width " + std::to_string(config::kCaptureWidth) +
-      " --height " + std::to_string(config::kCaptureHeight) +
-      " --quality " + std::to_string(config::kCaptureJpegQuality) +
-      " -o " + std::string(config::kCapturePath) + " >/dev/null 2>&1";
+  std::string command;
+  if (backend_ == Backend::kFswebcam) {
+    command =
+        "fswebcam -d " + std::string(config::kUsbCameraDevice) +
+        " -r " + std::to_string(config::kCaptureWidth) + "x" + std::to_string(config::kCaptureHeight) +
+        " --jpeg " + std::to_string(config::kCaptureJpegQuality) +
+        " --no-banner " + std::string(config::kCapturePath) + " >/dev/null 2>&1";
+  } else if (backend_ == Backend::kLibcamera) {
+    command =
+        "libcamera-still -n --immediate --timeout " + std::to_string(config::kCaptureTimeoutMs) +
+        " --width " + std::to_string(config::kCaptureWidth) +
+        " --height " + std::to_string(config::kCaptureHeight) +
+        " --quality " + std::to_string(config::kCaptureJpegQuality) +
+        " -o " + std::string(config::kCapturePath) + " >/dev/null 2>&1";
+  } else {
+    std::printf("[Camera] Backend no inicializado\n");
+    return std::nullopt;
+  }
 
   const int shotState = std::system(command.c_str());
   if (shotState != 0) {

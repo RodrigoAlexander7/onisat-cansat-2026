@@ -11,6 +11,15 @@ class Camera {
  public:
   bool init();
   std::optional<std::vector<uint8_t>> capture();
+
+ private:
+  enum class Backend {
+    kNone,
+    kFswebcam,
+    kLibcamera,
+  };
+
+  Backend backend_ = Backend::kNone;
 };
 
 }  // namespace imaging

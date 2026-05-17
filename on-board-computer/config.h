@@ -30,6 +30,7 @@ constexpr int kCaptureHeight = 240;
 constexpr int kCaptureJpegQuality = 65;
 constexpr int kCaptureTimeoutMs = 1000;
 constexpr const char* kCapturePath = "/tmp/cansat_capture.jpg";
+constexpr const char* kUsbCameraDevice = "/dev/video0";
 
 constexpr int kCaptureCount = 5;
 constexpr unsigned long kCaptureIntervalMs = 3000;
