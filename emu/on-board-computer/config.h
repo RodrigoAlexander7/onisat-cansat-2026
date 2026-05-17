@@ -1,0 +1,40 @@
+#ifndef OBC_CONFIG_H
+#define OBC_CONFIG_H
+
+#include <cstddef>
+#include <cstdint>
+
+namespace config {
+
+constexpr uint8_t kSpiChannel = 0;
+constexpr uint32_t kLoraNssPin = 24;
+constexpr uint32_t kLoraDio0Pin = 25;
+constexpr uint32_t kLoraRstPin = 22;
+
+constexpr float kLoraFrequencyMhz = 433.0f;
+constexpr float kLoraBandwidthKhz = 250.0f;
+constexpr uint8_t kLoraSpreadingFactor = 7;
+constexpr uint8_t kLoraCodingRate = 5;
+constexpr uint8_t kLoraSyncWord = 0x12;
+constexpr int8_t kLoraTxPowerDbm = 17;
+constexpr uint16_t kLoraPreambleLength = 8;
+constexpr uint8_t kLoraGain = 0;
+constexpr bool kLoraEnableCrc = true;
+
+constexpr std::size_t kMaxLoraPayloadBytes = 100;
+constexpr uint8_t kImagePacketType = 0x01;
+constexpr std::size_t kMaxImageFragments = 255;
+
+constexpr int kCaptureWidth = 320;
+constexpr int kCaptureHeight = 240;
+constexpr int kCaptureJpegQuality = 65;
+constexpr int kCaptureTimeoutMs = 1000;
+constexpr const char* kCapturePath = "/tmp/cansat_capture.jpg";
+
+constexpr int kCaptureCount = 5;
+constexpr unsigned long kCaptureIntervalMs = 3000;
+constexpr unsigned long kInterPacketDelayMs = 60;
+
+}  // namespace config
+
+#endif
