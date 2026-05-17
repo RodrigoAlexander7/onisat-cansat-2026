@@ -72,6 +72,7 @@ bool encodeJpeg(const RgbImage& image, int quality, std::vector<uint8_t>* out) {
 
   jpeg_set_defaults(&cinfo);
   jpeg_set_quality(&cinfo, quality, TRUE);
+  cinfo.restart_interval = config::kJpegRestartIntervalMcus;
   jpeg_start_compress(&cinfo, TRUE);
 
   while (cinfo.next_scanline < cinfo.image_height) {

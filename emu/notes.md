@@ -16,3 +16,6 @@ siempre hace cd /workspace
   
 # y para correrlo
   sudo ./rpi_sx1278_tx
+
+# en caso de hacerlo por primera ves instalar las dependencias (SI SALE ERROR AL INSTALARLAS NO IMPORTAN, COSAS DEL KERNEL XDDD) 
+  apt install -y cmake g++ liblgpio-dev libjpeg-dev fswebcam v4l-utils i2c-tools

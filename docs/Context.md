@@ -97,7 +97,8 @@
 
 - Cada foto se fragmenta en trozos del tamaño máximo del paquete LoRa.  
 - Cada fragmento incluye: número de imagen, índice de fragmento, total de fragmentos, y datos.  
-- Cola de transmisión FIFO: las fotos se encolan en el orden en que se tomaron.  
+- Cola de transmisión FIFO: las fotos se encolan en el orden en que se tomaron.
+- Las imagenes estereoscopicas 3D, deben ser generadas en la computadora a bordo, es un requisito de la competencia  
 - Al entrar en **caída libre** (por altitud >300 m o detección de caída), se descarta toda la cola de imágenes y la transmisión pasa a ser solo telemetría. La estación terrena reconoce imágenes incompletas porque no llega el último fragmento.
 - El payload que se usara sera de 100 bytes
 - Se piensa usar la siguiente configuracion pero puede cambiar si existe una mas optima para el caso:

@@ -22,7 +22,7 @@ class Altimeter {
   I2cBus* bus_;
   uint8_t addr_;
   bool available_;
-  uint16_t c_[7];
+  uint16_t c_[8];
 };
 
 }  // namespace sensors

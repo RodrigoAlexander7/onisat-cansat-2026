@@ -27,13 +27,14 @@ constexpr uint8_t kImageStartPacketType = 0x10;  // RTS start marker
 constexpr uint8_t kImageEndPacketType = 0x11;    // RTS end marker
 constexpr uint8_t kTelemetryPacketType = 0x02;
 constexpr std::size_t kMaxImageFragments = 255;
-constexpr uint8_t kFragmentRepeatCount = 2;
+constexpr uint8_t kFragmentRepeatCount = 1;
 
 constexpr int kSbsCaptureWidth = 2560;
 constexpr int kSbsCaptureHeight = 720;
 constexpr int kAnaglyphOutputWidth = 320;
 constexpr int kAnaglyphOutputHeight = 240;
 constexpr int kCaptureJpegQuality = 65;
+constexpr unsigned int kJpegRestartIntervalMcus = 8;
 constexpr int kCaptureTimeoutMs = 1000;
 constexpr const char* kCapturePath = "/tmp/cansat_capture.jpg";
 constexpr const char* kStereoCameraDevice = "/dev/video0";

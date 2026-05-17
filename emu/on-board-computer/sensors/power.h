@@ -18,6 +18,7 @@ class Power {
   I2cBus* bus_;
   uint8_t addr_;
   bool available_;
+  float shuntOhm_;
 };
 
 }  // namespace sensors

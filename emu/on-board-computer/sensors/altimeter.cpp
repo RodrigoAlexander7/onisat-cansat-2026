@@ -22,14 +22,14 @@ bool Altimeter::init() {
     usleep(3000);
 
     bool promOk = true;
-    for (int i = 1; i <= 6; ++i) {
+    for (int i = 0; i < 8; ++i) {
       uint8_t data[2] = {0};
       if (!bus_->readBytes(addr, static_cast<uint8_t>(0xA0 + i * 2), data, 2)) {
         promOk = false;
         break;
       }
       c_[i] = static_cast<uint16_t>((data[0] << 8) | data[1]);
-      if (c_[i] == 0 || c_[i] == 0xFFFF) {
+      if (i >= 1 && i <= 6 && (c_[i] == 0 || c_[i] == 0xFFFF)) {
         promOk = false;
       }
     }
@@ -72,15 +72,15 @@ float Altimeter::readPressurePa() {
   }
   uint32_t d1 = 0;
   uint32_t d2 = 0;
-  if (!readAdc(0x48, &d1) || !readAdc(0x58, &d2)) {
+  if (!readAdc(0x48, &d1) || !readAdc(0x50, &d2)) {
     return NAN;
   }
 
-  int64_t dT = static_cast<int64_t>(d2) - (static_cast<int64_t>(c_[5]) << 8);
-  int64_t off = (static_cast<int64_t>(c_[2]) << 16) + ((static_cast<int64_t>(c_[4]) * dT) >> 7);
-  int64_t sens = (static_cast<int64_t>(c_[1]) << 15) + ((static_cast<int64_t>(c_[3]) * dT) >> 8);
-  int64_t p = (((static_cast<int64_t>(d1) * sens) >> 21) - off) >> 15;
-  return static_cast<float>(p);
+  const double d_t = static_cast<double>(d2) - static_cast<double>(c_[5]) * 256.0;
+  const double off = static_cast<double>(c_[2]) * 65536.0 + (static_cast<double>(c_[4]) * d_t) / 128.0;
+  const double sens = static_cast<double>(c_[1]) * 32768.0 + (static_cast<double>(c_[3]) * d_t) / 256.0;
+  const double pressure_hpa = (static_cast<double>(d1) * sens / 2097152.0 - off) / 32768.0;
+  return static_cast<float>(pressure_hpa * 100.0);  // Pa
 }
 
 float Altimeter::readTemperatureC() {
@@ -88,12 +88,12 @@ float Altimeter::readTemperatureC() {
     return NAN;
   }
   uint32_t d2 = 0;
-  if (!readAdc(0x58, &d2)) {
+  if (!readAdc(0x50, &d2)) {
     return NAN;
   }
-  int64_t dT = static_cast<int64_t>(d2) - (static_cast<int64_t>(c_[5]) << 8);
-  int64_t temp = 2000 + ((dT * c_[6]) >> 23);
-  return static_cast<float>(temp) / 100.0f;
+  const double d_t = static_cast<double>(d2) - static_cast<double>(c_[5]) * 256.0;
+  const double temp = 2000.0 + d_t * static_cast<double>(c_[6]) / 8388608.0;
+  return static_cast<float>(temp / 100.0);
 }
 
 float Altimeter::getAltitudeMeters(float refPressurePa) {

@@ -17,6 +17,46 @@ os.makedirs(OUT_DIR, exist_ok=True)
 images = {}
 
 
+def save_partial_image(image_id, entry, missing):
+    total = entry["total"]
+    frags = entry["frags"]
+    total_bytes = entry["total_bytes"]
+
+    if frags:
+        default_chunk_size = max(len(chunk) for chunk in frags.values())
+    else:
+        default_chunk_size = 94
+
+    data_parts = []
+    for idx in range(total):
+        if idx in frags:
+            data_parts.append(frags[idx])
+            continue
+
+        if total_bytes and idx == total - 1:
+            expected_len = max(0, total_bytes - default_chunk_size * (total - 1))
+        else:
+            expected_len = default_chunk_size
+        data_parts.append(b"\x00" * expected_len)
+
+    data = b"".join(data_parts)
+    if total_bytes:
+        data = data[:total_bytes]
+
+    partial_path = os.path.join(OUT_DIR, f"image_{image_id:03d}.partial.jpg")
+    with open(partial_path, "wb") as file:
+        file.write(data)
+
+    miss_path = os.path.join(OUT_DIR, f"image_{image_id:03d}.missing.txt")
+    with open(miss_path, "w", encoding="utf-8") as file:
+        file.write(",".join(str(i) for i in missing))
+
+    print(
+        f"[PARTIAL] Guardada imagen parcial: {partial_path} ({len(data)} bytes), "
+        f"faltan {len(missing)} fragmentos"
+    )
+
+
 def finalize_image(image_id):
     entry = images.get(image_id)
     if not entry:
@@ -30,6 +70,8 @@ def finalize_image(image_id):
             f"[MISS] img={image_id} faltan {len(missing)} fragmentos: "
             f"{missing[:12]}{'...' if len(missing) > 12 else ''}"
         )
+        save_partial_image(image_id, entry, missing)
+        del images[image_id]
         return
 
     data = b"".join(frags[i] for i in range(total))
@@ -99,6 +141,7 @@ with serial.Serial(PORT, BAUD, timeout=1) as ser:
 
         if packet_type == PKT_TYPE_TELEMETRY:
             if len(raw) < 39:
+                print(f"[TEL?] paquete telemetria corto len={len(raw)} hex={raw.hex()}")
                 continue
             ts = u32(raw, 1)
             seq = u16(raw, 6)
@@ -180,3 +223,6 @@ with serial.Serial(PORT, BAUD, timeout=1) as ser:
             images[image_id]["seen_end"] = True
             print(f"[RTS-END] img={image_id} frags={total_frags}")
             finalize_image(image_id)
+            continue
+
+        print(f"[UNK] tipo=0x{packet_type:02X} len={len(raw)}")

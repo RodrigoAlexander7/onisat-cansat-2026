@@ -8,7 +8,7 @@ namespace {
 constexpr uint8_t kCandidates[] = {0x40, 0x41, 0x44, 0x45};
 }
 
-Power::Power(I2cBus* bus) : bus_(bus), addr_(0), available_(false) {}
+Power::Power(I2cBus* bus) : bus_(bus), addr_(0), available_(false), shuntOhm_(0.1f) {}
 
 bool Power::readRegister16(uint8_t reg, uint16_t* value) {
   uint8_t raw[2] = {0};
@@ -23,20 +23,11 @@ bool Power::init() {
   available_ = false;
   for (uint8_t addr : kCandidates) {
     addr_ = addr;
-    uint16_t manu = 0;
-    if (!readRegister16(0xFE, &manu)) {
+    uint16_t busV = 0;
+    uint16_t shuntV = 0;
+    if (!readRegister16(0x02, &busV) || !readRegister16(0x01, &shuntV)) {
       continue;
     }
-    if (manu != 0x5449) {
-      continue;
-    }
-
-    // INA226 config: avg=16, VBUSCT=1.1ms, VSHCT=1.1ms, continuous shunt+bus
-    const uint8_t configReg[2] = {0x44, 0x67};
-    bus_->writeBytes(addr_, 0x00, configReg, 2);
-    // calibration for 0.1 ohm shunt, current_lsb = 1mA (CAL=0x0100)
-    const uint8_t calReg[2] = {0x01, 0x00};
-    bus_->writeBytes(addr_, 0x05, calReg, 2);
 
     available_ = true;
     std::printf("[INA226] OK @0x%02X\n", addr_);
@@ -52,15 +43,17 @@ bool Power::read(float* currentA, float* powerW) {
   if (!available_) {
     return false;
   }
-  uint16_t currentRaw = 0;
-  uint16_t powerRaw = 0;
-  if (!readRegister16(0x04, &currentRaw) || !readRegister16(0x03, &powerRaw)) {
+  uint16_t rawV = 0;
+  uint16_t rawS = 0;
+  if (!readRegister16(0x02, &rawV) || !readRegister16(0x01, &rawS)) {
     return false;
   }
-  int16_t signedCurrent = static_cast<int16_t>(currentRaw);
-  // current_lsb 1 mA, power_lsb 25 mW with this config
-  *currentA = static_cast<float>(signedCurrent) * 0.001f;
-  *powerW = static_cast<float>(powerRaw) * 0.025f;
+
+  const float voltageV = static_cast<float>(rawV) * 0.00125f;
+  int16_t signedShunt = static_cast<int16_t>(rawS);
+  const float shuntV = static_cast<float>(signedShunt) * 0.0000025f;
+  *currentA = shuntV / shuntOhm_;
+  *powerW = voltageV * (*currentA);
   return true;
 }
 

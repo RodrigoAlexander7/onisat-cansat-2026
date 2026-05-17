@@ -24,9 +24,9 @@ bool Imu::init() {
     usleep(5000);
     bus_->writeByte(addr, 0x7E, 0x15);  // GYR normal
     usleep(5000);
-    // accel range ±2g, gyro ±250 dps
+    // Align with rasp/sensors.py
     bus_->writeByte(addr, 0x41, 0x03);
-    bus_->writeByte(addr, 0x43, 0x03);
+    bus_->writeByte(addr, 0x43, 0x00);
 
     addr_ = addr;
     available_ = true;
@@ -61,8 +61,8 @@ bool Imu::read(float* ax, float* ay, float* az, float* gx, float* gy, float* gz)
 
   // ±2g => 16384 LSB/g, convert to m/s^2
   constexpr float kAccScale = 9.80665f / 16384.0f;
-  // ±250 dps => 131.2 LSB/(deg/s)
-  constexpr float kGyrScale = 1.0f / 131.2f;
+  // rasp/sensors.py uses raw/16.4
+  constexpr float kGyrScale = 1.0f / 16.4f;
 
   *ax = static_cast<float>(axr) * kAccScale;
   *ay = static_cast<float>(ayr) * kAccScale;
