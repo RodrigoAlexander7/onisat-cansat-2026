@@ -24,19 +24,34 @@ bool ImageQueue::enqueueImage(const std::vector<uint8_t>& jpegBytes) {
     return false;
   }
 
+  fragments_.push(comms::packet::buildImageStart(
+      nextImageId_,
+      static_cast<uint8_t>(totalFragments),
+      static_cast<uint32_t>(jpegBytes.size()),
+      config::kFragmentRepeatCount));
+
   for (std::size_t index = 0; index < totalFragments; ++index) {
     const std::size_t start = index * chunkSize;
     const std::size_t end = std::min(start + chunkSize, jpegBytes.size());
     std::vector<uint8_t> chunk(jpegBytes.begin() + start, jpegBytes.begin() + end);
 
-    fragments_.push(comms::packet::buildImageFragment(
-        nextImageId_,
-        static_cast<uint8_t>(index),
-        static_cast<uint8_t>(totalFragments),
-        chunk));
+    for (uint8_t repeat = 0; repeat < config::kFragmentRepeatCount; ++repeat) {
+      fragments_.push(comms::packet::buildImageFragment(
+          nextImageId_,
+          static_cast<uint8_t>(index),
+          static_cast<uint8_t>(totalFragments),
+          chunk));
+    }
   }
 
-  std::printf("[Queue] Encolada imagen %u: %zu fragmentos\n", nextImageId_, totalFragments);
+  fragments_.push(comms::packet::buildImageEnd(
+      nextImageId_,
+      static_cast<uint8_t>(totalFragments)));
+
+  std::printf("[Queue] Encolada imagen %u: %zu fragmentos x%u + RTS\n",
+              nextImageId_,
+              totalFragments,
+              config::kFragmentRepeatCount);
   ++nextImageId_;
   return true;
 }

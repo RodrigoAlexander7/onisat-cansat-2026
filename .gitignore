@@ -30,3 +30,7 @@ RadioLib/
 # === Archivos de Registro y Dump ===
 *.log
 vgcore.*
+
+__pycache__/
+.venv/
+received_images/

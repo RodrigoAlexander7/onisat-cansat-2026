@@ -17,7 +17,7 @@ int main() {
     return 1;
   }
 
-  std::printf("[Main] Inicio etapa 1: captura + fragmentacion + envio LoRa\n");
+  std::printf("[Main] Inicio etapa 1: captura estereo + anaglifo onboard + envio LoRa\n");
 
   for (int photoIndex = 0; photoIndex < config::kCaptureCount; ++photoIndex) {
     auto jpegBytes = camera.capture();
