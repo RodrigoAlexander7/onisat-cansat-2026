@@ -1,5 +1,7 @@
 docker build -t pi-builder-trixie .
 
+sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
 1. Entra al contenedor interactivo montando tu código:
 
 docker run --rm -it -v /home/totora/Documents/PROFESIONAL/lora-transmision/EMU:/workspace pi-builder-trixie

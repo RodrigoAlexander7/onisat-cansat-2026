@@ -1,0 +1,8 @@
+Raspberry: habilitar SPI + dependencias
+   sudo raspi-config nonint do_spi 0
+   sudo reboot
+
+Then
+   sudo apt update
+   sudo apt install -y git cmake g++ liblgpio-dev
+   git clone --depth 1 https://github.com/jgromes/RadioLib.git ~/RadioLib
