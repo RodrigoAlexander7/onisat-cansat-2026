@@ -1,4 +1,5 @@
 import asyncio
+import csv
 import json
 import os
 import threading
@@ -12,6 +13,7 @@ BAUD = int(os.getenv("SERIAL_BAUD", "115200"))
 WS_HOST = os.getenv("WS_HOST", "localhost")
 WS_PORT = int(os.getenv("WS_PORT", "8080"))
 OUT_DIR = "received_images"
+CSV_PATH = os.path.join(OUT_DIR, "telemetry_log.csv")
 
 PKT_TYPE_IMAGE_FRAGMENT = 0x01
 PKT_TYPE_TELEMETRY = 0x02
@@ -35,6 +37,8 @@ last_time_ms = 0.0
 frontend_loop = None
 frontend_queue = None
 connected_clients = set()
+csv_file = None
+csv_writer = None
 
 
 def save_partial_image(image_id, entry, missing):
@@ -178,6 +182,69 @@ def emit_to_frontend(payload):
     frontend_loop.call_soon_threadsafe(_put)
 
 
+def init_csv_logger():
+    global csv_file, csv_writer
+    file_exists = os.path.exists(CSV_PATH)
+    csv_file = open(CSV_PATH, "a", newline="", encoding="utf-8")
+    fieldnames = [
+        "timestamp_ms",
+        "telemetry_seq",
+        "packets_received",
+        "packets_transmitted",
+        "packets_lost",
+        "pres_ms5611",
+        "alt_ms5611",
+        "temp_bme280",
+        "hum_bme280",
+        "accel_x",
+        "accel_y",
+        "accel_z",
+        "gyro_x",
+        "gyro_y",
+        "gyro_z",
+        "mag_x",
+        "mag_y",
+        "mag_z",
+        "current_ina226",
+        "power_ina226",
+        "velocity_z",
+    ]
+    csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+    if not file_exists or os.path.getsize(CSV_PATH) == 0:
+        csv_writer.writeheader()
+        csv_file.flush()
+
+
+def append_telemetry_csv(payload):
+    if csv_writer is None or csv_file is None:
+        return
+    row = {
+        "timestamp_ms": payload.get("timestamp_ms"),
+        "telemetry_seq": payload.get("telemetry_seq"),
+        "packets_received": payload.get("packets_received"),
+        "packets_transmitted": payload.get("packets_transmitted"),
+        "packets_lost": payload.get("packets_lost"),
+        "pres_ms5611": payload.get("pres_ms5611"),
+        "alt_ms5611": payload.get("alt_ms5611"),
+        "temp_bme280": payload.get("temp_bme280"),
+        "hum_bme280": payload.get("hum_bme280"),
+        "accel_x": payload.get("accel_x"),
+        "accel_y": payload.get("accel_y"),
+        "accel_z": payload.get("accel_z"),
+        "gyro_x": payload.get("gyro_x"),
+        "gyro_y": payload.get("gyro_y"),
+        "gyro_z": payload.get("gyro_z"),
+        "mag_x": payload.get("mag_x"),
+        "mag_y": payload.get("mag_y"),
+        "mag_z": payload.get("mag_z"),
+        "current_ina226": payload.get("current_ina226"),
+        "power_ina226": payload.get("power_ina226"),
+        "velocity_z": payload.get("velocity_z"),
+    }
+    csv_writer.writerow(row)
+    csv_file.flush()
+
+
 def serial_reader():
     global last_altitude, last_time_ms
 
@@ -261,6 +328,7 @@ def serial_reader():
                     "telemetry_seq": seq,
                 }
                 emit_to_frontend(frontend_payload)
+                append_telemetry_csv(frontend_payload)
 
                 print(
                     f"[TEL] seq={seq} t={ts}ms alt={altitude_m:.1f}m pres={pressure_pa:.1f}Pa "
@@ -381,6 +449,7 @@ async def main():
     global frontend_loop, frontend_queue
     frontend_loop = asyncio.get_running_loop()
     frontend_queue = asyncio.Queue()
+    init_csv_logger()
 
     serial_thread = threading.Thread(target=serial_reader, daemon=True)
     serial_thread.start()
