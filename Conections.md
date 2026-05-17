@@ -33,3 +33,10 @@
 | 3 (GPIO2 / SDA)      | SDA   | 4 (SDA)       |
 | 9 (GND)              | GND   | 5 (GND)       |
 | 17 (3.3V)            | 3.3V  | 7 (3.3V)      |
+
+
+### Conexion table — Raspberry Pi Zero 2W ↔ Servos
+| Raspberry Pi Zero 2W | GPIO | Servos |
+| -------------------- | ----- | ---------------------- |
+| Pin físico 12(PWM0, CEO) | GPIO18  | Servo 01 Cable de Data  |
+| Pin físico 33(PWM1s)     | GPIO13  | Servo 02 Cable de Data  |

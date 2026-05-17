@@ -91,6 +91,14 @@ def finalize_image(image_id):
             f"{missing[:12]}{'...' if len(missing) > 12 else ''}"
         )
         save_partial_image(image_id, entry, missing)
+        emit_to_frontend(
+            {
+                "type": "image_complete",
+                "image_id": image_id,
+                "is_partial": True,
+                "path": f"image_{image_id:03d}.partial.jpg",
+            }
+        )
         del images[image_id]
         return
 
@@ -103,6 +111,14 @@ def finalize_image(image_id):
     with open(path, "wb") as file:
         file.write(data)
     print(f"[OK] Imagen 3D anaglifo completa: {path} ({len(data)} bytes)")
+    emit_to_frontend(
+        {
+            "type": "image_complete",
+            "image_id": image_id,
+            "is_partial": False,
+            "path": f"image_{image_id:03d}.jpg",
+        }
+    )
     del images[image_id]
 
 
@@ -187,7 +203,9 @@ def serial_reader():
 
             if packet_type == PKT_TYPE_TELEMETRY:
                 if len(raw) < 39:
-                    print(f"[TEL?] paquete telemetria corto len={len(raw)} hex={raw.hex()}")
+                    print(
+                        f"[TEL?] paquete telemetria corto len={len(raw)} hex={raw.hex()}"
+                    )
                     continue
 
                 ts = u32(raw, 1)
@@ -209,7 +227,9 @@ def serial_reader():
                 power_w = u16(raw, 37) / 100.0
 
                 if last_time_ms > 0 and ts > last_time_ms:
-                    velocity_z = (altitude_m - last_altitude) / ((ts - last_time_ms) / 1000.0)
+                    velocity_z = (altitude_m - last_altitude) / (
+                        (ts - last_time_ms) / 1000.0
+                    )
                 else:
                     velocity_z = 0.0
                 last_altitude = altitude_m
@@ -217,6 +237,7 @@ def serial_reader():
 
                 packets_transmitted = packets_received + packets_lost
                 frontend_payload = {
+                    "type": "telemetry",
                     "timestamp_ms": ts,
                     "packets_received": packets_received,
                     "packets_transmitted": packets_transmitted,
@@ -261,6 +282,14 @@ def serial_reader():
                     "frags": {},
                     "seen_end": False,
                 }
+                emit_to_frontend(
+                    {
+                        "type": "image_start",
+                        "image_id": image_id,
+                        "total_frags": total_frags,
+                        "total_bytes": total_bytes,
+                    }
+                )
                 print(
                     f"[RTS-START] img={image_id} frags={total_frags} "
                     f"bytes={total_bytes} repeat={repeat_count}"
@@ -288,7 +317,20 @@ def serial_reader():
 
                 images[image_id]["total"] = total_frags
                 images[image_id]["frags"][frag_idx] = payload
-                print(f"[FRAG] img={image_id} {frag_idx + 1}/{total_frags} len={payload_len}")
+                bytes_received = sum(len(f) for f in images[image_id]["frags"].values())
+                emit_to_frontend(
+                    {
+                        "type": "image_progress",
+                        "image_id": image_id,
+                        "received_frags": len(images[image_id]["frags"]),
+                        "total_frags": total_frags,
+                        "bytes_received": bytes_received,
+                        "total_bytes": images[image_id]["total_bytes"],
+                    }
+                )
+                print(
+                    f"[FRAG] img={image_id} {frag_idx + 1}/{total_frags} len={payload_len}"
+                )
                 continue
 
             if packet_type == PKT_TYPE_IMAGE_END:

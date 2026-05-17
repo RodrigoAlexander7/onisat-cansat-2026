@@ -6,6 +6,7 @@ CMakeSettings.json
 cmake_install.cmake
 Makefile
 targets/
+received_images*/
 
 # === Binarios y Ejecutables ===
 *.bin
