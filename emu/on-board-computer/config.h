@@ -47,6 +47,17 @@ constexpr unsigned long kInterPacketDelayMs = 60;
 constexpr int kImageFragmentsPerTelemetry = 10;
 constexpr unsigned long kTelemetryPeriodMs = 200;  // 5 Hz
 
+constexpr float kAscentDetectMeters = 3.0f;
+constexpr int kAscentConfirmSamples = 3;
+constexpr float kFreeFallDetectMeters = 300.0f;
+constexpr float kFreeFallAccelThresholdMs2 = 3.0f;
+constexpr int kFreeFallAccelSamples = 3;
+constexpr float kServoDeployAltitudeMeters = 200.0f;
+constexpr float kLandingAltToleranceMeters = 5.0f;
+constexpr int kLandingStableSamples = 10;
+constexpr float kImpactAccelThresholdMs2 = 25.0f;
+constexpr unsigned long kLandingTelemetryDurationMs = 30000;
+
 }  // namespace config
 
 #endif

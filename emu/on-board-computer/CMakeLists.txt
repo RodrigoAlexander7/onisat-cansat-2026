@@ -22,6 +22,9 @@ add_executable(${PROJECT_NAME}
   src/comms/packet.cpp
   src/imaging/camera.cpp
   src/imaging/queue.cpp
+  src/control/servos.cpp
+  src/fsm/machine.cpp
+  src/fsm/states.cpp
   sensors/i2c_bus.cpp
   sensors/altimeter.cpp
   sensors/environment.cpp
