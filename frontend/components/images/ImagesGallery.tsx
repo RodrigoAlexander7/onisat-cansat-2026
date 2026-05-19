@@ -14,10 +14,54 @@ export type ImageEntry = {
 
 export function ImagesGallery({ entries }: { entries: ImageEntry[] }) {
   const [useUpscale, setUseUpscale] = useState(false);
+  const [selected, setSelected] = useState<ImageEntry | null>(null);
   const hasUpscaled = useMemo(() => entries.some((entry) => entry.upscaledName), [entries]);
+  const selectedName = useMemo(() => {
+    if (!selected) {
+      return null;
+    }
+    return useUpscale && selected.upscaledName ? selected.upscaledName : selected.name;
+  }, [selected, useUpscale]);
 
   return (
     <div className="flex flex-col gap-6">
+      {selected && selectedName ? (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="relative w-full max-w-6xl aspect-video bg-black rounded shadow-lg overflow-hidden"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Image
+              src={`/api/image/${encodeURIComponent(selectedName)}`}
+              alt={selected.name}
+              fill
+              sizes="(min-width: 1280px) 80vw, 100vw"
+              className="object-contain"
+              unoptimized
+            />
+            <button
+              type="button"
+              onClick={() => setSelected(null)}
+              className="absolute top-3 right-3 bg-white/90 text-gray-900 text-xs font-bold px-3 py-1 rounded shadow"
+            >
+              Cerrar
+            </button>
+            <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs px-3 py-2 flex flex-wrap gap-3">
+              <span>{selected.name}</span>
+              <span>{(selected.sizeBytes / 1024).toFixed(1)} KB</span>
+              <span>{new Date(selected.modifiedMs).toLocaleString('es-MX')}</span>
+              <span>{selected.isPartial ? 'PARCIAL' : 'COMPLETA'}</span>
+              <span>
+                Faltantes: {selected.missingCount === null ? '--' : selected.missingCount}
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold text-gray-600">{entries.length} archivos</span>
         <button
@@ -46,7 +90,11 @@ export function ImagesGallery({ entries }: { entries: ImageEntry[] }) {
               key={entry.name}
               className="bg-white border border-gray-200 rounded shadow-sm overflow-hidden flex flex-col"
             >
-              <div className="bg-black w-full aspect-video flex items-center justify-center relative">
+              <button
+                type="button"
+                onClick={() => setSelected(entry)}
+                className="bg-black w-full aspect-video flex items-center justify-center relative"
+              >
                 <Image
                   src={`/api/image/${encodeURIComponent(selectedName)}`}
                   alt={entry.name}
@@ -55,7 +103,7 @@ export function ImagesGallery({ entries }: { entries: ImageEntry[] }) {
                   className="object-cover"
                   unoptimized
                 />
-              </div>
+              </button>
               <div className="p-4 flex flex-col gap-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-gray-800">{entry.name}</span>
@@ -75,6 +123,13 @@ export function ImagesGallery({ entries }: { entries: ImageEntry[] }) {
                     Faltantes: {entry.missingCount === null ? '--' : entry.missingCount}
                   </span>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setSelected(entry)}
+                  className="text-xs font-semibold text-[#0033a0] hover:underline self-start"
+                >
+                  Ver en grande
+                </button>
               </div>
             </div>
           );

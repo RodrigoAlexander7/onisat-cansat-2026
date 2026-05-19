@@ -24,6 +24,8 @@ export interface RawTelemetryPacket {
   current_ina226: number; // A
   power_ina226: number; // W
   packets_received: number;
+  packets_transmitted: number;
+  packets_lost: number;
   
   // Computed / legacy fields used by GS logic
   alt_ms5611?: number; // Altitude meters
