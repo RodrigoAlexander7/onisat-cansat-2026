@@ -67,6 +67,7 @@ bool Machine::init() {
 
   std::printf("[FSM] Presion base inicial: %.2f Pa\n", refPressurePa_);
   lastTelemetryMs_ = nowMs();
+  prevSensorMs_ = lastTelemetryMs_;
   transitionTo(MissionState::kIdle);
   return true;
 }
@@ -97,10 +98,21 @@ void Machine::transitionTo(MissionState nextState) {
 }
 
 void Machine::readSensors() {
+  const uint32_t currentMs = nowMs();
   pressurePa_ = deps_.altimeter ? deps_.altimeter->readPressurePa() : NAN;
   altitudeM_ = std::isfinite(pressurePa_) && refPressurePa_ > 0.0f
                    ? 44330.0f * (1.0f - std::pow(pressurePa_ / refPressurePa_, 0.19029495f))
                    : 0.0f;
+
+  if (hasPrevAltitude_ && currentMs > prevSensorMs_) {
+    const float dtS = static_cast<float>(currentMs - prevSensorMs_) / 1000.0f;
+    if (dtS > 0.0f) {
+      verticalSpeedMs_ = (altitudeM_ - prevAltitudeM_) / dtS;
+    }
+  }
+  prevAltitudeM_ = altitudeM_;
+  hasPrevAltitude_ = true;
+  prevSensorMs_ = currentMs;
 
   if (deps_.environment) {
     deps_.environment->read(&tempC_, &humPct_);
@@ -215,11 +227,11 @@ void Machine::updateAscentState() {
 }
 
 void Machine::updateFreeFallState() {
-  if (!servosDeployed_ && altitudeM_ <= config::kServoDeployAltitudeMeters) {
+  const bool descendingEnough = verticalSpeedMs_ <= -config::kServoDeployDescendingSpeedMinMs;
+  if (!servosDeployed_ && altitudeM_ <= config::kServoDeployAltitudeMeters && descendingEnough) {
     if (deps_.servos) {
-      deps_.servos->deploy();
+      servosDeployed_ = deps_.servos->deploy();
     }
-    servosDeployed_ = true;
   }
 
   const float accNorm = std::sqrt(ax_ * ax_ + ay_ * ay_ + az_ * az_);

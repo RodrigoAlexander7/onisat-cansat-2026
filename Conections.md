@@ -38,5 +38,5 @@
 ### Conexion table — Raspberry Pi Zero 2W ↔ Servos
 | Raspberry Pi Zero 2W | GPIO | Servos |
 | -------------------- | ----- | ---------------------- |
-| Pin físico 12(PWM0, CEO) | GPIO18  | Servo 01 Cable de Data  |
-| Pin físico 33(PWM1s)     | GPIO13  | Servo 02 Cable de Data  |
+| Pin físico 32(PWM0) | GPIO12  | Servo 01 Cable de Data (30 grados de movimiento)  |
+| Pin físico 33(PWM1) | GPIO13  | Servo 02 Cable de Data (75 grados de movimiento)  |

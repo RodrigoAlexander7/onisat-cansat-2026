@@ -79,6 +79,10 @@ class Machine {
   float mz_ = 0.0f;
   float currentA_ = 0.0f;
   float powerW_ = 0.0f;
+  float prevAltitudeM_ = 0.0f;
+  float verticalSpeedMs_ = 0.0f;
+  bool hasPrevAltitude_ = false;
+  uint32_t prevSensorMs_ = 0;
 };
 
 }  // namespace fsm
