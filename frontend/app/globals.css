@@ -1,0 +1,23 @@
+@import "tailwindcss";
+@import "uplot/dist/uPlot.min.css";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; 
+}
+
+.uplot {
+  color: #374151;
+}
+
+.u-legend,
+.u-title,
+.u-label,
+.u-value {
+  color: #374151;
+}
