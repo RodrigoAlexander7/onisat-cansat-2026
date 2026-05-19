@@ -2,6 +2,7 @@ import asyncio
 import csv
 import json
 import os
+import shutil
 import threading
 import time
 
@@ -79,6 +80,43 @@ def save_partial_image(image_id, entry, missing):
         f"[PARTIAL] Guardada imagen parcial: {partial_path} ({len(data)} bytes), "
         f"faltan {len(missing)} fragmentos"
     )
+    return partial_path
+
+
+def build_upscaled_path(image_path):
+    base, ext = os.path.splitext(image_path)
+    return f"{base}.upscaled{ext}"
+
+
+def process_telea_inpaint(input_path, output_path, is_partial):
+    if not is_partial:
+        try:
+            shutil.copyfile(input_path, output_path)
+            return True
+        except OSError as exc:
+            print(f"[UPSCALE] Error copiando {input_path} -> {output_path}: {exc}")
+            return False
+
+    try:
+        import cv2
+    except ImportError:
+        print("[UPSCALE] OpenCV no disponible; omitiendo inpainting")
+        return False
+
+    image = cv2.imread(input_path)
+    if image is None:
+        print(f"[UPSCALE] No se pudo leer imagen {input_path}")
+        return False
+
+    mask = cv2.inRange(image, (0, 0, 0), (6, 6, 6))
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+    mask = cv2.dilate(mask, kernel, iterations=1)
+    inpainted = cv2.inpaint(image, mask, 3, cv2.INPAINT_TELEA)
+
+    ok = cv2.imwrite(output_path, inpainted, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+    if not ok:
+        print(f"[UPSCALE] Error guardando {output_path}")
+    return ok
 
 
 def finalize_image(image_id):
@@ -94,13 +132,18 @@ def finalize_image(image_id):
             f"[MISS] img={image_id} faltan {len(missing)} fragmentos: "
             f"{missing[:12]}{'...' if len(missing) > 12 else ''}"
         )
-        save_partial_image(image_id, entry, missing)
+        partial_path = save_partial_image(image_id, entry, missing)
+        upscaled_path = build_upscaled_path(partial_path)
+        upscaled_name = None
+        if process_telea_inpaint(partial_path, upscaled_path, is_partial=True):
+            upscaled_name = os.path.basename(upscaled_path)
         emit_to_frontend(
             {
                 "type": "image_complete",
                 "image_id": image_id,
                 "is_partial": True,
                 "path": f"image_{image_id:03d}.partial.jpg",
+                "upscaled_path": upscaled_name,
             }
         )
         del images[image_id]
@@ -115,12 +158,17 @@ def finalize_image(image_id):
     with open(path, "wb") as file:
         file.write(data)
     print(f"[OK] Imagen 3D anaglifo completa: {path} ({len(data)} bytes)")
+    upscaled_path = build_upscaled_path(path)
+    upscaled_name = None
+    if process_telea_inpaint(path, upscaled_path, is_partial=False):
+        upscaled_name = os.path.basename(upscaled_path)
     emit_to_frontend(
         {
             "type": "image_complete",
             "image_id": image_id,
             "is_partial": False,
             "path": f"image_{image_id:03d}.jpg",
+            "upscaled_path": upscaled_name,
         }
     )
     del images[image_id]

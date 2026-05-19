@@ -76,7 +76,7 @@ export function useTelemetry() {
       console.error('WebSocket Error:', err);
       setConnectionStatus('error');
     };
-  }, [flushPendingPackets, setConnectionStatus]);
+  }, [flushPendingPackets, setConnectionStatus, setImageComplete, updateImageProgress]);
 
   useEffect(() => {
     connect();

@@ -16,6 +16,22 @@ export interface ImageState {
   isComplete: boolean;
   isPartial: boolean;
   path: string | null;
+  upscaledPath: string | null;
+}
+
+interface ImageProgressPayload {
+  image_id: number;
+  total_frags?: number;
+  received_frags?: number;
+  total_bytes?: number;
+  bytes_received?: number;
+}
+
+interface ImageCompletePayload {
+  image_id: number;
+  is_partial: boolean;
+  path: string;
+  upscaled_path?: string | null;
 }
 
 interface TelemetryState {
@@ -39,8 +55,8 @@ interface TelemetryState {
   addPackets: (items: Array<{ packet: ProcessedTelemetry; newState: MissionState }>) => void;
   setConnectionStatus: (status: TelemetryState['connectionStatus']) => void;
   setSharedWindow: (min: number | null, max: number | null) => void;
-  updateImageProgress: (data: any) => void;
-  setImageComplete: (data: any) => void;
+  updateImageProgress: (data: ImageProgressPayload) => void;
+  setImageComplete: (data: ImageCompletePayload) => void;
   reset: () => void;
 }
 
@@ -61,6 +77,7 @@ export const useTelemetryStore = create<TelemetryState>((set, get) => ({
     isComplete: false,
     isPartial: false,
     path: null,
+    upscaledPath: null,
   },
   
   sharedWindow: { min: null, max: null },
@@ -124,6 +141,7 @@ export const useTelemetryStore = create<TelemetryState>((set, get) => ({
       isComplete: true,
       isPartial: data.is_partial,
       path: data.path,
+      upscaledPath: data.upscaled_path ?? null,
     }
   })),
   
@@ -142,6 +160,7 @@ export const useTelemetryStore = create<TelemetryState>((set, get) => ({
       isComplete: false,
       isPartial: false,
       path: null,
+      upscaledPath: null,
     },
     sharedWindow: { min: null, max: null }
   })

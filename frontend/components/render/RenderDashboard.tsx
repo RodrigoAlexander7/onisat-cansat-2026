@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { useTelemetryStore } from '@/store/telemetry-store';
 import { useTelemetry } from '@/hooks/useTelemetry';
 
@@ -35,13 +36,14 @@ export function RenderDashboard() {
   const bytesKB = (bytes / 1024).toFixed(0);
   const totalKB = imageState.totalBytes ? (imageState.totalBytes / 1024).toFixed(0) : '--';
 
-  const [lastImagePath, setLastImagePath] = useState<string | null>(null);
-  
-  useEffect(() => {
-    if (imageState.path) {
-      setLastImagePath(imageState.path);
+  const [useUpscale, setUseUpscale] = useState(false);
+  const hasUpscaled = Boolean(imageState.upscaledPath);
+  const displayPath = useMemo(() => {
+    if (useUpscale && imageState.upscaledPath) {
+      return imageState.upscaledPath;
     }
-  }, [imageState.path]);
+    return imageState.path;
+  }, [imageState.path, imageState.upscaledPath, useUpscale]);
 
   // Provide some mock values or best effort for the remaining UI fields
   const captureAltitude = currentPacket?.alt_ms5611 ? `${currentPacket.alt_ms5611.toFixed(0)} m` : '515 m';
@@ -61,24 +63,30 @@ export function RenderDashboard() {
               STABLE LINK
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-sm text-gray-800">Upscale</span>
-            {/* Toggle Switch */}
-            <div className="w-12 h-6 bg-[#22c55e] rounded-full p-1 flex justify-end items-center shadow-inner">
-              <div className="w-4 h-4 bg-white rounded-full shadow-sm flex justify-center items-center">
-                <span className="text-[#22c55e] text-[10px] font-bold">|</span>
-              </div>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={() => setUseUpscale((prev) => !prev)}
+            disabled={!hasUpscaled}
+            className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold transition ${
+              hasUpscaled
+                ? 'bg-[#22c55e] text-white hover:bg-[#16a34a]'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            {useUpscale ? 'Upscale ON' : 'Upscale OFF'}
+          </button>
         </div>
 
         {/* Image Display */}
         <div className="w-full aspect-video bg-black flex items-center justify-center overflow-hidden rounded shadow-sm border border-gray-200 mb-4 relative">
-          {lastImagePath ? (
-            <img 
-              src={`/api/image/${lastImagePath}`} 
+          {displayPath ? (
+            <Image
+              src={`/api/image/${encodeURIComponent(displayPath)}`}
               alt="Transmitted"
-              className="w-full h-full object-cover"
+              fill
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              className="object-cover"
+              unoptimized
             />
           ) : (
             <div className="text-gray-500 font-mono text-sm flex flex-col items-center">
