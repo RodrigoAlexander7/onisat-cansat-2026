@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ONISAT — Misión CanSat</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F4E1;</text></svg>" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo"><i class="fas fa-satellite"></i> ONISAT</a>
+    <ul class="nav-links">
+      <li><a href="#mision">Misión</a></li>
+      <li><a href="#desafio">Desafío</a></li>
+      <li><a href="#vuelo">Perfil de vuelo</a></li>
+      <li><a href="#cansat">Nuestro CanSat</a></li>
+      <li><a href="#equipo">Equipo</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-icon"><i class="fas fa-satellite"></i></div>
+    <h1>ONISAT</h1>
+    <p class="hero-sub">Sistema de telemetría e imagen para CanSat</p>
+    <p class="hero-tagline"><i class="fas fa-rocket"></i> Listos para el lanzamiento</p>
+    <div class="hero-meta">
+      <span><i class="fas fa-radio"></i> 433 MHz LoRa</span>
+      <span><i class="fas fa-camera"></i> Imagen 3D anaglifo</span>
+      <span><i class="fas fa-arrow-trend-up"></i> 400 m de altitud</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section id="mision" class="section">
+    <div class="container">
+      <div class="section-header">
+        <i class="fas fa-bullseye section-icon"></i>
+        <h2>La Misión</h2>
+      </div>
+      <div class="section-body">
+        <p class="lead">
+          <strong>ONISAT</strong> es un equipo multidisciplinario que participa en el desafío
+          <strong>CanSat</strong> — construir un satélite del tamaño de una lata y ponerlo a
+          prueba en una misión real.
+        </p>
+        <div class="mission-cards">
+          <div class="mission-card">
+            <i class="fas fa-plane-up"></i>
+            <h3>Lanzamiento</h3>
+            <p>Nuestro CanSat es elevado por un dron hasta <strong>400 m</strong> de altitud y liberado para iniciar su misión.</p>
+          </div>
+          <div class="mission-card">
+            <i class="fas fa-rotate"></i>
+            <h3>Descenso en autogiro</h3>
+            <p>Un sistema de aspas desplegables permite un descenso controlado y estable, cumpliendo los requisitos de la competencia.</p>
+          </div>
+          <div class="mission-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>Telemetría en vivo</h3>
+            <p>Durante toda la misión, el CanSat transmite <strong>15 variables</strong> de sensores en tiempo real a la estación terrestre.</p>
+          </div>
+          <div class="mission-card">
+            <i class="fas fa-image"></i>
+            <h3>Imagen estereoscópica</h3>
+            <p>Captura y transmisión de fotografías <strong>3D</strong> en puntos clave de la trayectoria, reconstruidas en tierra.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="desafio" class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <i class="fas fa-triangle-exclamation section-icon"></i>
+        <h2>El Desafío del Autogiro</h2>
+      </div>
+      <div class="section-body">
+        <p>
+          El descenso controlado mediante <strong>autogiro</strong> es el corazón técnico de la misión.
+          A diferencia de un paracaídas, el autogiro requiere un mecanismo de despliegue preciso y
+          un diseño aerodinámico que garantice estabilidad durante toda la caída.
+        </p>
+        <div class="challenges">
+          <div class="challenge-item">
+            <div class="challenge-num">01</div>
+            <div class="challenge-text">
+              <h4>Despliegue a 200 m</h4>
+              <p>Dos servos accionan las aspas del autogiro al alcanzar la altitud crítica durante el descenso. El timing es determinante para el éxito de la misión.</p>
+            </div>
+          </div>
+          <div class="challenge-item">
+            <div class="challenge-num">02</div>
+            <div class="challenge-text">
+              <h4>Integración mecánica</h4>
+              <p>El sistema de autogiro debe ir plegado dentro del volumen de una lata (<strong>≈ 350 mL</strong>) y desplegarse sin interferir con la antena ni los sensores.</p>
+            </div>
+          </div>
+          <div class="challenge-item">
+            <div class="challenge-num">03</div>
+            <div class="challenge-text">
+              <h4>Estabilidad del enlace</h4>
+              <p>Durante la rotación del autogiro, la antena LoRa debe mantener un enlace continuo con la estación terrestre, superando desafíos de polarización.</p>
+            </div>
+          </div>
+          <div class="challenge-item">
+            <div class="challenge-num">04</div>
+            <div class="challenge-text">
+              <h4>Detección autónoma</h4>
+              <p>El sistema detecta automáticamente el apogeo y la altitud de despliegue usando el barómetro y el acelerómetro, sin intervención externa.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vuelo" class="section">
+    <div class="container">
+      <div class="section-header">
+        <i class="fas fa-timeline section-icon"></i>
+        <h2>Perfil de Vuelo</h2>
+      </div>
+      <div class="section-body">
+        <p class="lead">La misión se divide en seis fases, cada una con objetivos específicos. El CanSat transita automáticamente entre ellas mediante su máquina de estados a bordo.</p>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content">
+              <h3>Inicialización <span class="badge">Init</span></h3>
+              <p>Calibración de sensores, establecimiento de la presión de referencia para el cálculo de altitud.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content">
+              <h3>Espera en tierra <span class="badge">Idle</span></h3>
+              <p>Sensores activos, a la espera del despegue. Se detecta lanzamiento cuando la altitud supera los 3 m sostenidos.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content">
+              <h3>Ascenso <span class="badge">Ascent</span></h3>
+              <p>Telemetría continua a 5 Hz. Captura de fotografías en hitos: 10, 30, 50, 100 y 200 m. Transmisión intercalada de imagen y datos.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">4</div>
+            <div class="timeline-content">
+              <h3>Caída libre <span class="badge">FreeFall</span></h3>
+              <p>Se descarta la cola de imágenes pendientes. La transmisión se vuelve exclusivamente telemetría. Despliegue de autogiro a los 200 m.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">5</div>
+            <div class="timeline-content">
+              <h3>Aterrizaje <span class="badge">Landing</span></h3>
+              <p>Detección de impacto mediante aceleración > 25 m/s² más altitud estable. Cuenta regresiva de 30 s para dar por concluida la misión.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">6</div>
+            <div class="timeline-content">
+              <h3>Misión completa <span class="badge">Mission Complete</span></h3>
+              <p>Fin de la transmisión. Todos los datos almacenados para análisis post-vuelo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cansat" class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <i class="fas fa-microchip section-icon"></i>
+        <h2>Nuestro CanSat</h2>
+      </div>
+      <div class="section-body">
+        <p class="lead">Dentro de una lata de aluminio de 350 mL se concentra todo lo necesario para la misión: sensores, cámara, radio y sistema de autogiro.</p>
+        <div class="hw-grid">
+          <div class="hw-card">
+            <i class="fas fa-microchip"></i>
+            <h3>Ordenador de a bordo</h3>
+            <p>Raspberry Pi Zero 2W — ejecuta la máquina de estados, lee sensores y gestiona la transmisión.</p>
+          </div>
+          <div class="hw-card">
+            <i class="fas fa-wifi"></i>
+            <h3>Radio LoRa</h3>
+            <p>SX1278 a 433 MHz, 250 kHz BW, SF7, CR 4/5, +17 dBm — enlace confiable con la estación terrestre.</p>
+          </div>
+          <div class="hw-card">
+            <i class="fas fa-temperature-high"></i>
+            <h3>Sensores</h3>
+            <p>MS5611 (presión), BME280 (temp/humedad), BMI160 (IMU), MMC5603 (magnetómetro), INA226 (potencia).</p>
+          </div>
+          <div class="hw-card">
+            <i class="fas fa-camera"></i>
+            <h3>Cámara estéreo</h3>
+            <p>2560 × 720 píxeles. Captura side-by-side convertida a anaglifo rojo-cian para visualización 3D.</p>
+          </div>
+          <div class="hw-card">
+            <i class="fas fa-fan"></i>
+            <h3>Sistema de autogiro</h3>
+            <p>Dos servos digitales accionan las aspas de descenso,pletamente integradas en el volumen de la lata.</p>
+          </div>
+          <div class="hw-card">
+            <i class="fas fa-bolt"></i>
+            <h3>Potencia</h3>
+            <p>Sistema de alimentación regulado con monitoreo continuo de corriente y potencia mediante INA226.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="equipo" class="section">
+    <div class="container">
+      <div class="section-header">
+        <i class="fas fa-users section-icon"></i>
+        <h2>Equipo ONISAT</h2>
+      </div>
+      <p class="section-desc">Siete ingenieros, un objetivo. Conoce a quienes hacen posible esta misión.</p>
+      <div class="team-grid" id="team-grid"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <span class="footer-logo"><i class="fas fa-satellite"></i> ONISAT</span>
+      <p>Proyecto CanSat — Sistema de telemetría e imagen</p>
+      <p class="footer-small"><i class="fas fa-rocket"></i> Listos para el lanzamiento</p>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
