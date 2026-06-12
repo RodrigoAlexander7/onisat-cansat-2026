@@ -8,6 +8,7 @@
 | DIO0                         | 5        |
 | RST                          | 4        |
 | 3.3V                         | 3V3      |
+| GND                         | GND      |
 
 
 ### Conexion table — Raspberry Pi Zero 2W ↔ ESP32-S3 / LoRa
