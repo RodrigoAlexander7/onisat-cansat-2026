@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "onisat-cansat-2026",
+    "languages": ["TypeScript", "C++", "C", "Python"],
+    "frameworks": ["Next.js"],
+    "description": "CanSat project: ground station frontend/backend, on-board computer firmware, and utilities.",
+    "analyzedAt": "2026-06-22T00:00:00Z",
+    "gitCommitHash": "$(git rev-parse HEAD)"
+  },
+  "nodes": [
+    {"id":"file:README.md","type":"document","name":"README","summary":"Project README","tags":["docs"],"filePath":"README.md"},
+    {"id":"file:ground-station/frontend/app/page.tsx","type":"file","name":"Frontend: Dashboard Page","summary":"Next.js dashboard page","tags":["frontend","react"],"filePath":"ground-station/frontend/app/page.tsx"},
+    {"id":"file:ground-station/backend/recv_images.py","type":"file","name":"Backend: recv_images","summary":"Receives images from on-board computer","tags":["backend","python"],"filePath":"ground-station/backend/recv_images.py"},
+    {"id":"file:on-board-computer/src/main.cpp","type":"file","name":"On-board: main","summary":"Firmware entry point","tags":["firmware","cpp"],"filePath":"on-board-computer/src/main.cpp"},
+    {"id":"file:utils/rasp/sensors.py","type":"file","name":"Raspberry Pi sensors","summary":"Sensor helpers for Raspberry Pi","tags":["rasp","python"],"filePath":"utils/rasp/sensors.py"}
+  ],
+  "edges": [
+    {"source":"file:ground-station/frontend/app/page.tsx","target":"file:ground-station/backend/recv_images.py","type":"HTTP_CALLS","weight":0.7},
+    {"source":"file:ground-station/backend/recv_images.py","target":"file:on-board-computer/src/main.cpp","type":"depends_on","weight":0.6},
+    {"source":"file:on-board-computer/src/main.cpp","target":"file:utils/rasp/sensors.py","type":"calls","weight":0.8}
+  ],
+  "layers": [
+    {"id":"layer:frontend","name":"Frontend","description":"Next.js frontend code and components","nodeIds":["file:ground-station/frontend/app/page.tsx"]},
+    {"id":"layer:backend","name":"Backend","description":"Python backend services","nodeIds":["file:ground-station/backend/recv_images.py"]},
+    {"id":"layer:firmware","name":"On-board Computer","description":"C/C++ firmware for the on-board computer","nodeIds":["file:on-board-computer/src/main.cpp"]},
+    {"id":"layer:utils","name":"Utilities","description":"Shared utilities and scripts","nodeIds":["file:utils/rasp/sensors.py","file:README.md"]}
+  ],
+  "tour": [
+    {"order":1,"title":"Project Overview","description":"Read the README and get an overview of the CanSat project.","nodeIds":["file:README.md"]},
+    {"order":2,"title":"Run the Frontend","description":"Start at the Next.js dashboard page.","nodeIds":["file:ground-station/frontend/app/page.tsx"]},
+    {"order":3,"title":"Inspect Backend Image Receiver","description":"See how the backend receives images from the on-board computer.","nodeIds":["file:ground-station/backend/recv_images.py"]}
+  ]
+}
