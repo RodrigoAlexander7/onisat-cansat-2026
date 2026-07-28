@@ -35,3 +35,5 @@ vgcore.*
 __pycache__/
 .venv/
 received_images/
+.codebase-memory/
+
